@@ -21,8 +21,28 @@ def get_default_prompts():
             "favorite": False,
         },
     ]
+def show_menu():
+    print("\n=== 나만의 프롬프트 관리 ===")
+    print("1. 프롬프트 추가")
+    print("2. 프롬프트 목록")
+    print("3. 카테고리별 조회")
+    print("4. 프롬프트 검색")
+    print("5. 프롬프트 상세 보기")
+    print("6. 즐겨찾기 관리")
+    print("7. 즐겨찾기 목록")
+    print("0. 종료")
 
-prompts = get_default_prompts()
-print(f"기본 프롬프트 {len(prompts)}개를 불러왔습니다.")
-for prompt in prompts:
-    print(f"- [{prompt['category']}] {prompt['title']}")
+def main():
+    prompts = get_default_prompts()
+
+    while True:
+        show_menu()
+        choice = input("선택: ").strip()
+
+        if choice == "0":
+            print("\n프로그램을 종료합니다. 안녕히 가세요!")
+            break
+        else:
+            print("\n해당 기능은 아직 준비 중입니다.")
+if __name__ == "__main__":
+    main()  
