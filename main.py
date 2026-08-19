@@ -21,6 +21,45 @@ def get_default_prompts():
             "favorite": False,
         },
     ]
+
+def input_required(label):
+    while True:
+        value = input(label).strip()
+        if value:
+            return value
+        print(" [!] 값이 비어 있습니다. 다시 입력해 주세요.")
+
+def choose_category():
+    print("\n카테고리 선택:")
+    for number, name in enumerate(CATEGORIES, start=1):
+        print(f" {number}. {name}")
+    print(f" {len(CATEGORIES) + 1}. 직접 입력")
+
+    choice = input("선택: ").strip()
+    if choice.isdigit():
+        number = int(choice)
+        if 1 <= number <= len(CATEGORIES):
+            return CATEGORIES[number - 1]
+        if number == len(CATEGORIES) + 1:
+            return input_required("카테고리 직접 입력: ")
+    print(" [!] 잘못된 선택입니다. '기타'로 저장합니다.")
+    return "기타"
+
+
+def add_prompt(prompts):
+    print("\n=== 프롬프트 추가 ===")
+    title = input_required("제목: ")
+    content = input_required("내용: ")
+    category = choose_category()
+
+    prompts.append({
+        "title": title,
+        "content": content,
+        "category": category,
+        "favorite": False,
+    })
+    print(f"\n'{title}' 프롬프트가 추가되었습니다! (총 {len(prompts)}개)")
+
 def show_menu():
     print("\n=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
@@ -42,7 +81,13 @@ def main():
         if choice == "0":
             print("\n프로그램을 종료합니다. 안녕히 가세요!")
             break
+
+        elif choice == "1":
+            add_prompt(prompts)
+
         else:
             print("\n[!] 0~7 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
+
+
 if __name__ == "__main__":
-    main()  
+    main()
