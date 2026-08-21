@@ -12,18 +12,21 @@ def get_default_prompts():
             "content": """[역할과 목표] 너는 기업 담당자를 대신해 고객 불만 이메일 답변 초안을 작성하는 전문 라이터다. 고객의 불만을 항목별로 파악하고, 입력된 조건에 맞는 공식 답변 초안을 생성하는 것이 목표다. [답변 형식]- 출력 구조: 제목 / 도입부 / 불만 항목별 답변(번호 유지, 불만 메일에 numbering이 없다면 순서대로 번호 붙이) / 마무리 / 서명란- 불만 항목이 여러 개일 경우 반드시 번호를 유지하여 각각 답변한다.- 서명란은 [이름], [직책], [연락처] 형태의 빈칸으로 출력한다.[안전장치]- 입력 정보가 부족하거나 답변 방향이 불명확하면 초안 작성 전에 먼저 질문한다.- 질문에 대한 답변이 단답형이어도 문맥에 맞춰서 이해해야 한다.- 질문에 대한 답변을 받았음에도 불구하고 모호하거나 여러 의미의 중복 또는 상호 충돌되는 내용의 답변이 있다면, 되물을 수 있다.- 질문에 대한 답변이 '잘 모르겠다.'인 경우, "확인 후 안내" 문구로 처리한다.- 처리 가능 여부가 불확실한 요청(예: 환불 가능 여부)은 임의로 확정하지 않고 "확인 후 안내" 문구로 처리한다.- 답변 작성이 불가능한 항목이 있으면 불가능하다고 명시한다.[숫자·사실 규칙]- 원문에 없는 날짜, 금액, 이름, 정책 수치는 절대 지어내지 않는다.- 원문에 명시되지 않은 사실이 필요한 경우 반드시 '확인 필요' 또는 '[    ]'로 표시한다.\n- 애매한 표현(예: "빠른 시일 내")은 구체적 기한이 없을 경우 그대로 유지하되, 구체적 날짜가 필요한 자리는 '[날짜 확인 필요]'로 표시한다.""",
             "category": "텍스트 생성",
             "favorite": True,
+            "views": 0,
         },
         {
             "title": "광고 이미지 생성",
             "content": "documentary photography, natural available light, 35mm lens, shallow depth of field, warm low-angle backlight, muted palette of black, orange, off-white, fine film grain, no text, no letters, no logo",
             "category": "이미지 생성",
             "favorite": False,
+            "views": 0,
         },
         {
             "title": "고교야구 투구수 매니저",
             "content": "너는 고교야구 투수 관리 담당자다. 감독에게 보낼 투구수 초과 위험 안내 메시지를 한국어로 3문장 이내로 작성한다.",
             "category": "페르소나",
             "favorite": False,
+            "views": 0,
         },
     ]
 
@@ -41,7 +44,11 @@ def load_prompts():
 
     try:
         with open(DATA_FILE, "r", encoding="utf-8") as f:
-            return json.load(f)
+            prompts = json.load(f)
+        for prompt in prompts:
+            if "views" not in prompt:
+                prompt["views"] = 0
+        return prompts
     except Exception as e:
         print(f"   [!] 불러오기에 실패해 기본 데이터로 시작합니다: {e}")
         return get_default_prompts()
@@ -108,6 +115,7 @@ def add_prompt(prompts):
         "content": content,
         "category": category,
         "favorite": False,
+        "views": 0,
     })
     print(f"\n'{title}' 프롬프트가 추가되었습니다! (총 {len(prompts)}개)")
     save_prompts(prompts)
@@ -171,10 +179,14 @@ def show_detail(prompts):
         return
 
     prompt = prompts[index]
+    prompt["views"] = prompt.get("views", 0) + 1
+    save_prompts(prompts)
+    
     print("\n" + "-" * 44)
     print(f"제목: {prompt['title']}")
     print(f"카테고리: {prompt['category']}")
     print(f"즐겨찾기: {'⭐' if prompt['favorite'] else '☆'}")
+    print(f"조회수: {prompt['views']}회")
     print("-" * 44)
     print("내용:")
     print(prompt["content"])
