@@ -74,6 +74,21 @@ def show_list(prompts):
         return
     print_prompts(list(enumerate(prompts, start=1)))
 
+def show_by_category(prompts):
+    print("\n=== 카테고리별 조회 ===")
+    category = choose_category()
+
+    found = [(number, prompt)
+             for number, prompt in enumerate(prompts, start=1)
+             if prompt["category"] == category]
+
+    if not found:
+        print(f"\n[{category}] 카테고리에 등록된 프롬프트가 없습니다.")
+        return
+
+    print(f"\n[{category}] 카테고리 프롬프트:")
+    print_prompts(found)
+
 def show_menu():
     print("\n=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
@@ -101,6 +116,9 @@ def main():
 
         elif choice == "2":
             show_list(prompts)
+
+        elif choice == "3":
+            show_by_category(prompts)
 
         else:
             print("\n[!] 0~7 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
