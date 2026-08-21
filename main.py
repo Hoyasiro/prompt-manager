@@ -87,6 +87,20 @@ def input_required(label):
             return value
         print(" [!] 값이 비어 있습니다. 다시 입력해 주세요.")
 
+def ask_prompt_index(prompts):
+    raw = input("프롬프트 번호 입력: ").strip()
+
+    if not raw.isdigit():
+        print("   [!] 숫자로 된 번호를 입력해 주세요.")
+        return None
+
+    index = int(raw) - 1
+    if not 0 <= index < len(prompts):
+        print("   [!] 존재하지 않는 번호입니다.")
+        return None
+
+    return index
+
 def choose_category():
     print("\n카테고리 선택:")
     for number, name in enumerate(CATEGORIES, start=1):
@@ -243,6 +257,50 @@ def show_top_viewed(prompts):
 
     print(f"\n총 {len(prompts)}개의 프롬프트")
 
+def edit_prompt(prompts):
+    print("\n=== 프롬프트 수정 ===")
+    index = ask_prompt_index(prompts)
+    if index is None:
+        return
+
+    prompt = prompts[index]
+    print(f"\n현재 제목: {prompt['title']}")
+    print("(엔터만 누르면 기존 값을 유지합니다)")
+
+    new_title = input("새 제목: ").strip()
+    if new_title:
+        prompt["title"] = new_title
+
+    print(f"\n현재 내용: {prompt['content'][:40]}...")
+    new_content = input("새 내용: ").strip()
+    if new_content:
+        prompt["content"] = new_content
+
+    print(f"\n현재 카테고리: {prompt['category']}")
+    answer = input("카테고리도 변경할까요? (y/n): ").strip().lower()
+    if answer == "y":
+        prompt["category"] = choose_category()
+
+    save_prompts(prompts)
+    print(f"\n'{prompt['title']}' 프롬프트를 수정했습니다!")
+
+
+def delete_prompt(prompts):
+    print("\n=== 프롬프트 삭제 ===")
+    index = ask_prompt_index(prompts)
+    if index is None:
+        return
+
+    title = prompts[index]["title"]
+    answer = input(f"'{title}' 프롬프트를 정말 삭제할까요? (y/n): ").strip().lower()
+    if answer != "y":
+        print("삭제를 취소했습니다.")
+        return
+
+    del prompts[index]
+    save_prompts(prompts)
+    print(f"\n'{title}' 프롬프트를 삭제했습니다. (남은 {len(prompts)}개)")
+
 def show_menu():
     print("\n=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
@@ -254,6 +312,8 @@ def show_menu():
     print("7. 즐겨찾기 목록")
     print("8. Markdown 내보내기")
     print("9. 조회수 Top 목록")
+    print("10. 프롬프트 수정")
+    print("11. 프롬프트 삭제")
     print("0. 종료")
 
 def main():
@@ -294,8 +354,14 @@ def main():
         elif choice == "9":
             show_top_viewed(prompts)
 
+        elif choice == "10":
+            edit_prompt(prompts)
+
+        elif choice == "11":
+            delete_prompt(prompts)
+
         else:
-            print("\n[!] 0~9 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
+            print("\n[!] 0~11 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
 
 
 if __name__ == "__main__":
