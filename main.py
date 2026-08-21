@@ -1,10 +1,15 @@
+import json
+import os
+
+DATA_FILE = "prompts.json"
+
 CATEGORIES = ["텍스트 생성", "이미지 생성", "영상 생성", "페르소나", "자동화", "기타"]
 
 def get_default_prompts():
     return [
         {
             "title": "불만 이메일 답변초안 작성",
-            "content": """[역할과 목표] 너는 기업 담당자를 대신해 고객 불만 이메일 답변 초안을 작성하는 전문 라이터다. 고객의 불만을 항목별로 파악하고, 입력된 조건에 맞는 공식 답변 초안을 생성하는 것이 목표다. [답변 형식]- 출력 구조: 제목 / 도입부 / 불만 항목별 답변(번호 유지, 불만 메일에 numbering이 없다면 순서대로 번호 붙이) / 마무리 / 서명란- 불만 항목이 여러 개일 경우 반드시 번호를 유지하여 각각 답변한다.- 서명란은 [이름], [직책], [연락처] 형태의 빈칸으로 출력한다.[안전장치]- 입력 정보가 부족하거나 답변 방향이 불명확하면 초안 작성 전에 먼저 질문한다.- 질문에 대한 답변이 단답형이어도 문맥에 맞춰서 이해해야 한다.- 질문에 대한 답변을 받았음에도 불구하고 모호하거나 여러 의미의 중복 또는 상호 충돌되는 내용의 답변이 있다면, 되물을 수 있다.- 질문에 대한 답변이 '잘 모르겠다.'인 경우, "확인 후 안내" 문구로 처리한다.- 처리 가능 여부가 불확실한 요청(예: 환불 가능 여부)은 임의로 확정하지 않고 "확인 후 안내" 문구로 처리한다.- 답변 작성이 불가능한 항목이 있으면 불가능하다고 명시한다.[숫자·사실 규칙]- 원문에 없는 날짜, 금액, 이름, 정책 수치는 절대 지어내지 않는다.- 원문에 명시되지 않은 사실이 필요한 경우 반드시 '확인 필요' 또는 '[    ]'로 표시한다.- 애매한 표현(예: "빠른 시일 내")은 구체적 기한이 없을 경우 그대로 유지하되, 구체적 날짜가 필요한 자리는 '[날짜 확인 필요]'로 표시한다.""",
+            "content": """[역할과 목표] 너는 기업 담당자를 대신해 고객 불만 이메일 답변 초안을 작성하는 전문 라이터다. 고객의 불만을 항목별로 파악하고, 입력된 조건에 맞는 공식 답변 초안을 생성하는 것이 목표다. [답변 형식]- 출력 구조: 제목 / 도입부 / 불만 항목별 답변(번호 유지, 불만 메일에 numbering이 없다면 순서대로 번호 붙이) / 마무리 / 서명란- 불만 항목이 여러 개일 경우 반드시 번호를 유지하여 각각 답변한다.- 서명란은 [이름], [직책], [연락처] 형태의 빈칸으로 출력한다.[안전장치]- 입력 정보가 부족하거나 답변 방향이 불명확하면 초안 작성 전에 먼저 질문한다.- 질문에 대한 답변이 단답형이어도 문맥에 맞춰서 이해해야 한다.- 질문에 대한 답변을 받았음에도 불구하고 모호하거나 여러 의미의 중복 또는 상호 충돌되는 내용의 답변이 있다면, 되물을 수 있다.- 질문에 대한 답변이 '잘 모르겠다.'인 경우, "확인 후 안내" 문구로 처리한다.- 처리 가능 여부가 불확실한 요청(예: 환불 가능 여부)은 임의로 확정하지 않고 "확인 후 안내" 문구로 처리한다.- 답변 작성이 불가능한 항목이 있으면 불가능하다고 명시한다.[숫자·사실 규칙]- 원문에 없는 날짜, 금액, 이름, 정책 수치는 절대 지어내지 않는다.- 원문에 명시되지 않은 사실이 필요한 경우 반드시 '확인 필요' 또는 '[    ]'로 표시한다.\n- 애매한 표현(예: "빠른 시일 내")은 구체적 기한이 없을 경우 그대로 유지하되, 구체적 날짜가 필요한 자리는 '[날짜 확인 필요]'로 표시한다.""",
             "category": "텍스트 생성",
             "favorite": True,
         },
@@ -21,6 +26,52 @@ def get_default_prompts():
             "favorite": False,
         },
     ]
+
+def save_prompts(prompts):
+    try:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(prompts, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"   [!] 저장에 실패했습니다: {e}")
+
+
+def load_prompts():
+    if not os.path.exists(DATA_FILE):
+        return get_default_prompts()
+
+    try:
+        with open(DATA_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        print(f"   [!] 불러오기에 실패해 기본 데이터로 시작합니다: {e}")
+        return get_default_prompts()
+
+def export_markdown(prompts):
+    print("\n=== Markdown 내보내기 ===")
+    if not prompts:
+        print("내보낼 프롬프트가 없습니다.")
+        return
+
+    filename = "prompts.md"
+    lines = ["# 나만의 프롬프트 모음\n"]
+
+    for category in CATEGORIES:
+        found = [p for p in prompts if p["category"] == category]
+        if not found:
+            continue
+
+        lines.append(f"\n## {category}\n")
+        for prompt in found:
+            star = " ⭐" if prompt["favorite"] else ""
+            lines.append(f"\n### {prompt['title']}{star}\n")
+            lines.append(f"```\n{prompt['content']}\n```\n")
+
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write("".join(lines))
+        print(f"'{filename}' 파일로 내보냈습니다! (총 {len(prompts)}개)")
+    except Exception as e:
+        print(f"   [!] 내보내기에 실패했습니다: {e}")
 
 def input_required(label):
     while True:
@@ -59,6 +110,7 @@ def add_prompt(prompts):
         "favorite": False,
     })
     print(f"\n'{title}' 프롬프트가 추가되었습니다! (총 {len(prompts)}개)")
+    save_prompts(prompts)
 
 def print_prompts(found, unit="프롬프트"):
     for number, prompt in found:
@@ -148,7 +200,7 @@ def toggle_favorite(prompts):
         print(f"\n'{prompt['title']}' 프롬프트를 즐겨찾기에 추가했습니다! ⭐")
     else:
         print(f"\n'{prompt['title']}' 프롬프트를 즐겨찾기에서 해제했습니다.")
-
+    save_prompts(prompts)
 
 def show_favorites(prompts):
     print("\n=== 즐겨찾기 목록 ===")
@@ -171,10 +223,11 @@ def show_menu():
     print("5. 프롬프트 상세 보기")
     print("6. 즐겨찾기 관리")
     print("7. 즐겨찾기 목록")
+    print("8. Markdown 내보내기")
     print("0. 종료")
 
 def main():
-    prompts = get_default_prompts()
+    prompts = load_prompts()
 
     while True:
         show_menu()
@@ -205,8 +258,11 @@ def main():
         elif choice == "7":
             show_favorites(prompts)
 
+        elif choice == "8":
+            export_markdown(prompts)
+
         else:
-            print("\n[!] 0~7 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
+            print("\n[!] 0~8 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
 
 
 if __name__ == "__main__":
