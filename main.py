@@ -181,7 +181,7 @@ def show_detail(prompts):
     prompt = prompts[index]
     prompt["views"] = prompt.get("views", 0) + 1
     save_prompts(prompts)
-    
+
     print("\n" + "-" * 44)
     print(f"제목: {prompt['title']}")
     print(f"카테고리: {prompt['category']}")
@@ -226,6 +226,23 @@ def show_favorites(prompts):
 
     print_prompts(found, unit="즐겨찾기")
 
+def show_top_viewed(prompts):
+    print("\n=== 조회수 Top 목록 ===")
+    if not prompts:
+        print("등록된 프롬프트가 없습니다.")
+        return
+
+    ranked = sorted(enumerate(prompts, start=1),
+                    key=lambda item: item[1].get("views", 0),
+                    reverse=True)
+
+    for rank, (number, prompt) in enumerate(ranked, start=1):
+        star = " ⭐" if prompt["favorite"] else ""
+        print(f"{rank}위. [{prompt['category']}] {prompt['title']}{star} "
+              f"({prompt.get('views', 0)}회)")
+
+    print(f"\n총 {len(prompts)}개의 프롬프트")
+
 def show_menu():
     print("\n=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
@@ -236,6 +253,7 @@ def show_menu():
     print("6. 즐겨찾기 관리")
     print("7. 즐겨찾기 목록")
     print("8. Markdown 내보내기")
+    print("9. 조회수 Top 목록")
     print("0. 종료")
 
 def main():
@@ -273,8 +291,11 @@ def main():
         elif choice == "8":
             export_markdown(prompts)
 
+        elif choice == "9":
+            show_top_viewed(prompts)
+
         else:
-            print("\n[!] 0~8 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
+            print("\n[!] 0~9 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
 
 
 if __name__ == "__main__":
