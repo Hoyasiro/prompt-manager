@@ -128,6 +128,40 @@ def show_detail(prompts):
     print(prompt["content"])
     print("-" * 44)
 
+def toggle_favorite(prompts):
+    print("\n=== 즐겨찾기 관리 ===")
+    raw = input("프롬프트 번호 입력: ").strip()
+
+    if not raw.isdigit():
+        print("   [!] 숫자로 된 번호를 입력해 주세요.")
+        return
+
+    index = int(raw) - 1
+    if not 0 <= index < len(prompts):
+        print("   [!] 존재하지 않는 번호입니다.")
+        return
+
+    prompt = prompts[index]
+    prompt["favorite"] = not prompt["favorite"]
+
+    if prompt["favorite"]:
+        print(f"\n'{prompt['title']}' 프롬프트를 즐겨찾기에 추가했습니다! ⭐")
+    else:
+        print(f"\n'{prompt['title']}' 프롬프트를 즐겨찾기에서 해제했습니다.")
+
+
+def show_favorites(prompts):
+    print("\n=== 즐겨찾기 목록 ===")
+    found = [(number, prompt)
+             for number, prompt in enumerate(prompts, start=1)
+             if prompt["favorite"]]
+
+    if not found:
+        print("즐겨찾기한 프롬프트가 없습니다. 6번 메뉴에서 등록해 보세요.")
+        return
+
+    print_prompts(found, unit="즐겨찾기")
+
 def show_menu():
     print("\n=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
@@ -164,6 +198,12 @@ def main():
 
         elif choice == "5":
             show_detail(prompts)
+
+        elif choice == "6":
+            toggle_favorite(prompts)
+
+        elif choice == "7":
+            show_favorites(prompts)
 
         else:
             print("\n[!] 0~7 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
