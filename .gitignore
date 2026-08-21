@@ -5,3 +5,4 @@ venv/
 .DS_Store
 .vscode/
 *.log
+prompts.json
