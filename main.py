@@ -89,6 +89,45 @@ def show_by_category(prompts):
     print(f"\n[{category}] 카테고리 프롬프트:")
     print_prompts(found)
 
+def search_prompt(prompts):
+    print("\n=== 프롬프트 검색 ===")
+    keyword = input_required("검색어: ").lower()
+
+    found = [(number, prompt)
+             for number, prompt in enumerate(prompts, start=1)
+             if keyword in prompt["title"].lower()
+             or keyword in prompt["content"].lower()]
+
+    if not found:
+        print(f"\n'{keyword}' 에 해당하는 프롬프트를 찾지 못했습니다.")
+        return
+
+    print("\n검색 결과:")
+    print_prompts(found)
+
+def show_detail(prompts):
+    print("\n=== 프롬프트 상세 보기 ===")
+    raw = input("프롬프트 번호 입력: ").strip()
+
+    if not raw.isdigit():
+        print("   [!] 숫자로 된 번호를 입력해 주세요.")
+        return
+
+    index = int(raw) - 1
+    if not 0 <= index < len(prompts):
+        print("   [!] 존재하지 않는 번호입니다.")
+        return
+
+    prompt = prompts[index]
+    print("\n" + "-" * 44)
+    print(f"제목: {prompt['title']}")
+    print(f"카테고리: {prompt['category']}")
+    print(f"즐겨찾기: {'⭐' if prompt['favorite'] else '☆'}")
+    print("-" * 44)
+    print("내용:")
+    print(prompt["content"])
+    print("-" * 44)
+
 def show_menu():
     print("\n=== 나만의 프롬프트 관리 ===")
     print("1. 프롬프트 추가")
@@ -119,6 +158,12 @@ def main():
 
         elif choice == "3":
             show_by_category(prompts)
+
+        elif choice == "4":
+            search_prompt(prompts)
+
+        elif choice == "5":
+            show_detail(prompts)
 
         else:
             print("\n[!] 0~7 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
