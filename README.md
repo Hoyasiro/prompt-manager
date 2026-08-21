@@ -115,3 +115,16 @@ prompts = [
 ├── README.md
 └── .gitignore
 ```
+## 제출용 스크린샷
+
+| 파일 | 내용 |
+|---|---|
+| `screenshots/01_개발환경.png` | Python·Git 버전, 사용자 정보, VSCode 확장, GitHub 연동 |
+| `screenshots/02_clone확인.png` | 공개 샘플 저장소 clone 및 로그 확인 |
+| `screenshots/03_추가_빈입력검증.png` | 프롬프트 추가, 빈 입력 시 재요청 |
+| `screenshots/04_검색.png` | 키워드 검색 (성공 / 결과 없음) |
+| `screenshots/05_상세보기.png` | 상세 보기 및 잘못된 번호 처리 |
+| `screenshots/06_즐겨찾기.png` | 즐겨찾기 추가·해제 토글 |
+| `screenshots/07_목록.png` | 전체 목록, 카테고리별 조회 |
+| `screenshots/08_git로그그래프.png` | 커밋 이력 및 브랜치 병합 그래프 |
+| `screenshots/09_보너스기능.png` | 조회수 Top, Markdown 내보내기, 수정·삭제 |
