@@ -46,6 +46,33 @@ def load_prompts():
         print(f"   [!] 불러오기에 실패해 기본 데이터로 시작합니다: {e}")
         return get_default_prompts()
 
+def export_markdown(prompts):
+    print("\n=== Markdown 내보내기 ===")
+    if not prompts:
+        print("내보낼 프롬프트가 없습니다.")
+        return
+
+    filename = "prompts.md"
+    lines = ["# 나만의 프롬프트 모음\n"]
+
+    for category in CATEGORIES:
+        found = [p for p in prompts if p["category"] == category]
+        if not found:
+            continue
+
+        lines.append(f"\n## {category}\n")
+        for prompt in found:
+            star = " ⭐" if prompt["favorite"] else ""
+            lines.append(f"\n### {prompt['title']}{star}\n")
+            lines.append(f"```\n{prompt['content']}\n```\n")
+
+    try:
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write("".join(lines))
+        print(f"'{filename}' 파일로 내보냈습니다! (총 {len(prompts)}개)")
+    except Exception as e:
+        print(f"   [!] 내보내기에 실패했습니다: {e}")
+
 def input_required(label):
     while True:
         value = input(label).strip()
@@ -196,6 +223,7 @@ def show_menu():
     print("5. 프롬프트 상세 보기")
     print("6. 즐겨찾기 관리")
     print("7. 즐겨찾기 목록")
+    print("8. Markdown 내보내기")
     print("0. 종료")
 
 def main():
@@ -230,8 +258,11 @@ def main():
         elif choice == "7":
             show_favorites(prompts)
 
+        elif choice == "8":
+            export_markdown(prompts)
+
         else:
-            print("\n[!] 0~7 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
+            print("\n[!] 0~8 사이의 번호만 입력할 수 있습니다. 다시 선택해 주세요.")
 
 
 if __name__ == "__main__":
